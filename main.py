@@ -25,3 +25,5 @@ with open('input.txt', 'r') as input_file, open('output.txt', 'w') as output_fil
     russian_average = russian_sum / student_count
 
     output_file.write(f"{math_average:.9f} {physics_average:.9f} {russian_average:.9f}")
+
+    print("hello")
