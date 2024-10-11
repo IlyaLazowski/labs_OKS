@@ -1,11 +1,10 @@
-
 import time
 import serial
 import serial.tools.list_ports
-def data_transfer(com_port_sender, com_port_receiver, baudrate , message_to_send):
+def data_transfer(com_port_sender, com_port_receiver, baudrate, message_to_send):
+    print(com_port_sender)
     port_sender = com_port_sender
     port_receiver = com_port_receiver
-    baudrate = baudrate
 
     try:
         sender = serial.Serial(port_sender, baudrate, timeout=1)
@@ -14,11 +13,9 @@ def data_transfer(com_port_sender, com_port_receiver, baudrate , message_to_send
         receiver = serial.Serial(port_receiver, baudrate, timeout=1)
         print(f'Порт {port_receiver} открыт для получения.')
 
-        message = message_to_send
-        sender.write(message.encode('utf-8'))
-        print(f'Отправлено: {message}')
+        sender.write(message_to_send.encode('utf-8'))
+        print(f'Отправлено: {message_to_send}')
         time.sleep(1)
-
 
         response = receiver.readline().decode('utf-8')
         if response:
@@ -28,12 +25,14 @@ def data_transfer(com_port_sender, com_port_receiver, baudrate , message_to_send
 
     except serial.SerialException as e:
         print(f'Ошибка: {e}')
+        response = None  # Обработка случая, когда возникла ошибка
     finally:
         sender.close()
         print(f'Порт {port_sender} закрыт.')
         receiver.close()
         print(f'Порт {port_receiver} закрыт.')
 
+    return response
 
 def list_virtual_ports():
     ports = serial.tools.list_ports.comports()
