@@ -7,28 +7,22 @@ class Packet:
     def __init__(self, group_number, com_port, message):
         self.group_number = group_number
         self.com_port = com_port
-
-        # Рассчитываем n
         n = self.group_number
-
-        # Создаем флаг
         self.flag = f"${chr(97 + n)}"  # '$' + 'a' + n (где 'a' - это 97 в ASCII)
-
-        # Параметры пакета
         self.destination_address = 0
         self.source_address = str(self.com_port)
-
-        # Поле данных
-        self.data = message  # Здесь предполагается, что message – это строка
-        self.fcs = 0  # Контрольная сумма (FCS) нулевая
+        if len(message) > n:
+            self.data = message[:n]  # Обрезаем сообщение до длины group_number
+        else:
+            self.data = message
+        self.fcs = 0
 
     def to_bytes(self):
-        # Конвертация пакета в байтовую строку
         return (self.flag +
-                str(self.destination_address) +  # Преобразуем в строку
+                str(self.destination_address) +
                 self.source_address +
                 self.data +
-                str(self.fcs))  # Преобразуем FCS в строку
+                str(self.fcs))
 
 
 def data_transfer(com_port_sender, com_port_receiver, baudrate, group_number, message_to_send):

@@ -14,12 +14,12 @@ def fill_values(initial_data, text_area, write_speed=0, read_speed=0, bytes_writ
         str(result_packet)
     ]
 
-    # Обновляем значения в текстовом поле
+
     for i, value in enumerate(filled_values):
         line = initial_data[i].strip() + value + "\n"
         text_area.insert(tk.END, line)
 
-    # Отключаем текстовое поле снова
+
     text_area.config(state='disabled')
 
 

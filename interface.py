@@ -6,28 +6,26 @@ from status_window import fill_values, highlight_character
 from exeption_handling import exception_handling
 
 def byte_stuffing(input_string):
-    replacements = []  # Список для хранения индексов замен
+    replacements = []
     result = ""
     length = len(input_string)
 
-    # Заменяем '$u' на 'r-', если он не в начале строки
-    start_index = 0  # Начальный индекс для поиска
+    start_index = 0
 
     while True:
-        index = input_string.find('$u', start_index)  # Находим индекс '$u'
-        if index == -1:  # Если больше нет вхождений, выходим из цикла
+        index = input_string.find('$u', start_index)
+        if index == -1:
             break
-        if index > 0:  # Если '$u' не в начале строки
+        if index > 0:
             replacements.append(index)
-            result += input_string[start_index:index] + 'r-'  # Добавляем текст до и заменяем '$u' на 'r-'
+            result += input_string[start_index:index] + 'r-'
         else:
-            result += input_string[start_index:index + 2]  # Добавляем '$u' без изменений, если в начале
+            result += input_string[start_index:index + 2]
 
-        start_index = index + 2  # Продолжаем поиск после текущего '$u'
+        start_index = index + 2
 
-    result += input_string[start_index:]  # Добавляем оставшуюся часть строки
+    result += input_string[start_index:]
 
-    # Теперь заменяем 'r' на 'r+' в оставшейся части результата
     temp_result = ""
 
     for i in range(len(result)):
@@ -35,15 +33,19 @@ def byte_stuffing(input_string):
             if i + 1 < len(result) and result[i + 1] == '-':
                 temp_result += 'r'  # Оставляем 'r' как есть
             else:
-                temp_result += 'r+'  # Заменяем 'r' на 'r+'
-                replacements.append(len(temp_result) - 2)  # Сохраняем индекс замены
+                temp_result += 'r+'
+                replacements.append(len(temp_result) - 2)
         else:
-            temp_result += result[i]  # Добавляем текущий символ как есть
+            temp_result += result[i]
 
     print(result)
 
-    return temp_result, replacements  # Возвращаем как результат, так и индексы замен
+    return temp_result, replacements
 
+def byte_on_stuffing(input_string):
+    modified_string = input_string.replace('r-', '$u')
+    modified_string = modified_string.replace('r+', 'r')
+    return modified_string
 
 
 
@@ -57,13 +59,10 @@ def submission_processing():
         baudrate = nameOfOptionMenuChoiseSpeed.get()  # Получаем скорость
         response = com_func.data_transfer(extracted_ports[0], extracted_ports[1], baudrate, 20, user_input)
 
-        # Выполняем бит/байт-стаффинг
         before_stuffing = response
         after_stuffing , replacements = byte_stuffing(before_stuffing)
 
-
-        # Подсчитываем количество байтов в пакете данных
-        bytes_write = len(response)  # Или любое другое значение, которое вы хотите использовать
+        bytes_write = len(response)
 
         # Обновляем окно состояния
         fill_values(initial_data, text_area,  baudrate, baudrate, bytes_write, before_stuffing, after_stuffing,
@@ -72,7 +71,7 @@ def submission_processing():
             highlight_character(initial_data, text_area, 4, replacements[i])
             highlight_character(initial_data, text_area, 4, replacements[i] + 1)
 
-# Остальной код остается без изменений
+
 initial_data = [
     "Write speed: ",
     "Read speed: ",
