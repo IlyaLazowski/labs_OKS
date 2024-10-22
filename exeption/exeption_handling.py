@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import StringVar, OptionMenu
-import com_func
+
 
 def show_error(message , root):
     error_window = tk.Toplevel(root)
