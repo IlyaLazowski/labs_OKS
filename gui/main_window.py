@@ -13,10 +13,12 @@ def submission_processing():
         extracted_ports = [port.strip() for port in extracted_ports]
 
         baudrate = nameOfOptionMenuChoiseSpeed.get()  # Получаем скорость
-        response = com_func.data_transfer(extracted_ports[0], extracted_ports[1], baudrate, 20, user_input)
-
-        before_stuffing = response
+        before_stuffing = user_input
         after_stuffing , replacements = byte_stuffing(before_stuffing)
+
+        response = com_func.data_transfer(extracted_ports[0], extracted_ports[1], baudrate, 20, after_stuffing)
+
+
 
         bytes_write = len(response)
 
