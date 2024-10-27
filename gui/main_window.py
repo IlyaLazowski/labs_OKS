@@ -4,6 +4,8 @@ from work_func import com_func
 from status_window import fill_values, highlight_character
 from exeption.exeption_handling import exception_handling
 from work_func.byte_stuffing import byte_stuffing
+from work_func.hamming_code import hamming_encode, distort_data , hamming_decode ,bits_to_string
+from work_func.com_func import Packet
 
 def submission_processing():
     user_input = text_area_one.get("1.0", tk.END).strip()
@@ -13,18 +15,27 @@ def submission_processing():
         extracted_ports = [port.strip() for port in extracted_ports]
 
         baudrate = nameOfOptionMenuChoiseSpeed.get()  # Получаем скорость
-        before_stuffing = user_input
-        after_stuffing , replacements = byte_stuffing(before_stuffing)
+        packet = Packet(20, extracted_ports[0], user_input)
+        before_stuffing = packet.to_bytes()
+        after_stuffing, replacements = byte_stuffing(before_stuffing)
+        print(f"after = {after_stuffing}")
 
-        response = com_func.data_transfer(extracted_ports[0], extracted_ports[1], baudrate, 20, after_stuffing)
+        bit_representation = ''.join(format(ord(c), '08b') for c in user_input)
+        data = hamming_encode(bit_representation)
+        data, presence_of_error, position = distort_data(data)
+        data , error_position = hamming_decode(data)
+        data = bits_to_string(data)
 
 
+
+
+        response = com_func.data_transfer(extracted_ports[0], extracted_ports[1], baudrate, 20, data)
 
         bytes_write = len(response)
 
         # Обновляем окно состояния
-        fill_values(initial_data, text_area,  baudrate, baudrate, bytes_write, before_stuffing, after_stuffing,
-                    response)
+        fill_values(initial_data, text_area, baudrate, baudrate, bytes_write, before_stuffing, after_stuffing,
+                    response, bit_representation, hamming_encode(bit_representation), presence_of_error, position)
         for i in range(len(replacements)):
             highlight_character(initial_data, text_area, 4, replacements[i])
             highlight_character(initial_data, text_area, 4, replacements[i] + 1)
@@ -36,6 +47,10 @@ initial_data = [
     "Bytes write: ",
     "Before byte-stuffing: ",
     "After byte-stuffing: ",
+    "Bit representation: ",
+    "Hamming code: ",
+    "Presence of error: ",
+    "Position error: ",
     "Result packet: "
 ]
 
@@ -43,7 +58,7 @@ root = tk.Tk()
 status_window = tk.Toplevel(root)
 status_window.title("Текстовое поле с параметрами")
 
-text_area = Text(status_window, height=10, width=60, state='normal')  # Включаем ввод
+text_area = Text(status_window, height=10, width=60, state='normal',wrap=tk.WORD)  # Включаем ввод
 text_area.pack(padx=10, pady=10)
 
 for item in initial_data:

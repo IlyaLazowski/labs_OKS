@@ -1,7 +1,4 @@
-
-
-
-
+import random
 def hamming_encode(data):
     # Ensure the data contains only '0' and '1' characters
     if not all(bit in '01' for bit in data):
@@ -79,6 +76,39 @@ def hamming_decode(data):
 
 
 
+import random
+
+def distort_data(data):
+    # Преобразуем строку в список для изменения
+    data = list(data)
+    presence_of_error = "no error"
+    position = "no"
+
+    # Генерация случайного числа для определения типа ошибки
+    error_chance = random.random()
+
+    # Искажение одного бита с вероятностью 60%
+    if error_chance < 0.6:
+        bit_to_flip = random.randint(0, len(data) - 1)
+        data[bit_to_flip] = '1' if data[bit_to_flip] == '0' else '0'
+        presence_of_error = "single error"
+        position = str(bit_to_flip)
+
+    # Искажение двух бит с вероятностью 25%
+    elif error_chance < 0.85:  # 0.6 + 0.25 = 0.85
+        if len(data) >= 2:
+            bits_to_flip = random.sample(range(len(data)), 2)
+            for bit in bits_to_flip:
+                data[bit] = '1' if data[bit] == '0' else '0'
+            presence_of_error = "double fault"
+            position = str(bits_to_flip)
+
+    # Возвращаем обратно в строку
+    return ''.join(data), presence_of_error, position
+
+
+
+
 data2 = "100010010001"
 
 
@@ -94,9 +124,17 @@ print(error_i)
 print(data3)
 
 def bits_to_string(bits):
-    # Разбиваем строку на куски по 8 бит
-    chars = [bits[i:i + 8] for i in range(0, len(bits), 8)]
-    # Преобразуем каждый кусок в символ
-    return ''.join(chr(int(char, 2)) for char in chars)
+    # Проверка на корректность входных данных
+    if len(bits) % 8 != 0:
+        raise ValueError("The length of the bit string must be a multiple of 8.")
+
+    # Преобразование битов в символы
+    characters = []
+    for i in range(0, len(bits), 8):
+        byte = bits[i:i + 8]  # Получаем 8-битный байт
+        character = chr(int(byte, 2))  # Преобразуем в символ
+        characters.append(character)
+
+    return ''.join(characters)
 
 print(bits_to_string(data3))

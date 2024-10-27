@@ -1,6 +1,7 @@
 import time
 import serial
 import serial.tools.list_ports
+from work_func.hamming_code import hamming_decode
 
 
 class Packet:
@@ -25,6 +26,7 @@ class Packet:
                 str(self.fcs))
 
 
+
 def data_transfer(com_port_sender, com_port_receiver, baudrate, group_number, message_to_send):
     print(com_port_sender)
     port_sender = com_port_sender
@@ -39,6 +41,8 @@ def data_transfer(com_port_sender, com_port_receiver, baudrate, group_number, me
 
         # Создаем пакет
         packet = Packet(group_number, com_port_sender, message_to_send)
+
+
         message_bytes = packet.to_bytes().encode('utf-8')  # Получаем байтовое представление пакета
 
         # Отправляем сообщение
@@ -51,6 +55,7 @@ def data_transfer(com_port_sender, com_port_receiver, baudrate, group_number, me
             response_decoded = response.decode('utf-8')
             print(f'Ответ из {port_receiver}: {response_decoded}')
             response = response_decoded
+
         else:
             print('Ответ не получен.')
 

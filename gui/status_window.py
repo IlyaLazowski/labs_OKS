@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import Text, Button
 
-def fill_values(initial_data, text_area, write_speed=0, read_speed=0, bytes_write=0, before_byte_stuffing="", after_byte_stuffing="", result_packet=""):
+def fill_values(initial_data, text_area, write_speed=0, read_speed=0, bytes_write=0, before_byte_stuffing="", after_byte_stuffing="", result_packet="", bit_representation="" , hamming_code="", presence_of_error="", position=""):
     text_area.config(state='normal')
     text_area.delete('1.0', tk.END)
 
@@ -11,6 +11,10 @@ def fill_values(initial_data, text_area, write_speed=0, read_speed=0, bytes_writ
         f"{bytes_write} Bytes",
         str(before_byte_stuffing),
         str(after_byte_stuffing),
+        str(bit_representation),
+        str(hamming_code),
+        str(presence_of_error),
+        str(position),
         str(result_packet)
     ]
 
