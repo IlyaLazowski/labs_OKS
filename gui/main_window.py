@@ -1,13 +1,15 @@
 import tkinter as tk
-from tkinter import StringVar, OptionMenu, Text
+from tkinter import StringVar, OptionMenu, Text, scrolledtext
 from work_func import com_func
 from status_window import fill_values, highlight_character
 from exeption.exeption_handling import exception_handling
 from work_func.byte_stuffing import byte_stuffing
 from work_func.hamming_code import hamming_encode, distort_data , hamming_decode ,bits_to_string
 from work_func.com_func import Packet
+from work_func.CSMA import receiving_the_package
 
 def submission_processing():
+    text_area2.delete("1.0", tk.END)
     user_input = text_area_one.get("1.0", tk.END).strip()
     if exception_handling(nameOfOptionMenuChoiseComPorts, nameOfOptionMenuChoiseSpeed, root):
         output_label_up_right.config(text=user_input)
@@ -26,12 +28,14 @@ def submission_processing():
         data , error_position = hamming_decode(data)
         data = bits_to_string(data)
 
-
-
-
         response = com_func.data_transfer(extracted_ports[0], extracted_ports[1], baudrate, 20, data)
 
         bytes_write = len(response)
+
+        fill_values(initial_data, text_area, baudrate, baudrate, bytes_write, before_stuffing, after_stuffing,
+                    "", bit_representation, hamming_encode(bit_representation), presence_of_error, position)
+
+        receiving_the_package(text_area2,tk)
 
         # Обновляем окно состояния
         fill_values(initial_data, text_area, baudrate, baudrate, bytes_write, before_stuffing, after_stuffing,
@@ -57,6 +61,13 @@ initial_data = [
 root = tk.Tk()
 status_window = tk.Toplevel(root)
 status_window.title("Текстовое поле с параметрами")
+
+text_window = tk.Toplevel(root)
+text_window.title("Logger")
+
+# Создаем текстовое поле с прокруткой
+text_area2 = scrolledtext.ScrolledText(text_window, wrap=tk.WORD, width=40, height=10)
+text_area2.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
 text_area = Text(status_window, height=10, width=60, state='normal',wrap=tk.WORD)  # Включаем ввод
 text_area.pack(padx=10, pady=10)
